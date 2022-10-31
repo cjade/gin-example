@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"fmt"
-	"gin-example/app/models"
+	"gin-example/app/Repositories"
 	"gin-example/conf"
 	"gin-example/utils/db"
 	"time"
@@ -22,7 +22,8 @@ type Auth struct {
 }
 
 func (a *Auth) Check() (bool, error) {
-	return models.CheckAuth(a.UserName, a.Password)
+	u := Repositories.User{Username: a.UserName, Password: a.Password}
+	return u.CheckAuth()
 }
 
 // CacheToken

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"gin-example/utils/e"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,11 +17,11 @@ type Response struct {
 
 // Response
 //
-// @Description:
+// @Description: 响应json
 //
 // @Author: Jade
 //
-// @Date: 2022-10-30 21:45:37
+// @Date: 2022-10-31 00:47:15
 //
 // @Receiver  g
 //
@@ -31,8 +32,7 @@ type Response struct {
 func (g *Gin) Response(httpCode, errCode int, data interface{}) {
 	g.C.JSON(httpCode, Response{
 		Code: errCode,
-		//Msg:  e.GetMsg(errCode),
-		Msg:  "e.GetMsg(errCode)",
+		Msg:  e.GetMsg(errCode),
 		Data: data,
 	})
 	return

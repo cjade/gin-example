@@ -17,7 +17,7 @@ func GetCode(err error) int {
 	}
 	return -1
 }
-func GetMsg(err error) string {
+func GetMsgs(err error) string {
 	if e, ok := err.(MyError); ok {
 		return e.Msg
 	}

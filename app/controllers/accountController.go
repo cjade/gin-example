@@ -3,11 +3,12 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"gin-example/app/models"
+	"gin-example/app/Repositories"
 	"gin-example/app/services/user"
 	"gin-example/conf"
 	"gin-example/utils/app"
 	"gin-example/utils/db"
+	"gin-example/utils/e"
 	"gin-example/utils/jwt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,35 +19,42 @@ type User struct {
 	UserName string
 }
 
-type LoginForm struct {
-	UserName string `form:"user_name" json:"user_name" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
+type LoginRequest struct {
+	UserName string `json:"user_name" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // Login
 //
-//	@Description: 登录
-//	@param c
+// @Description: 登录
+//
+// @Author: Jade
+//
+// @Date: 2022-10-31 00:16:29
+//
+// @Param  c
 func Login(c *gin.Context) {
 	appR := app.Gin{C: c}
-	json := &LoginForm{}
-	if err := c.ShouldBindQuery(json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	req := &LoginRequest{}
+	if err := c.ShouldBind(req); err != nil {
+		appR.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
-	authServer := user.Auth{UserName: json.UserName, Password: json.Password}
+
+	authServer := user.Auth{UserName: req.UserName, Password: req.Password}
+
 	isExist, err := authServer.Check()
 	if err != nil {
-		appR.Response(http.StatusBadRequest, 10001, nil)
+		appR.Response(http.StatusBadRequest, e.RecordNotFound, nil)
 		return
 	}
 
 	if !isExist {
-		appR.Response(http.StatusBadRequest, 10002, nil)
+		appR.Response(http.StatusBadRequest, e.RecordNotFound, nil)
 		return
 	}
 
-	token, err := jwt.GenerateToken(json.UserName, json.Password)
+	token, err := jwt.GenerateToken(req.UserName, req.Password)
 	if err != nil {
 		appR.Response(http.StatusBadRequest, 10003, nil)
 		return
@@ -90,7 +98,7 @@ func Logout(c *gin.Context) {
 //	@param c
 func Register(c *gin.Context) {
 	appR := app.Gin{C: c}
-	b := models.Books{BookName: "abd"}
+	b := Repositories.Book{BookName: "abd"}
 	bid, _ := b.Create()
 
 	appR.Response(http.StatusOK, 200,
