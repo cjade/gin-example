@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"gin-example/configs"
+	"gin-example/init/config"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -16,14 +16,14 @@ var Redis *redis.Client
 //var RedisClient RedisUtil
 
 func init() {
-	address := fmt.Sprintf("%s:%d", configs.Cfg.Redis.Host, configs.Cfg.Redis.Port)
+	address := fmt.Sprintf("%s:%d", config.Cfg.Redis.Host, config.Cfg.Redis.Port)
 
 	rdb := redis.NewClient(&redis.Options{
 		Network:  "tcp",
 		Addr:     address,
-		Username: configs.Cfg.Redis.Username,
-		Password: configs.Cfg.Redis.Password,
-		DB:       configs.Cfg.Redis.DB,
+		Username: config.Cfg.Redis.Username,
+		Password: config.Cfg.Redis.Password,
+		DB:       config.Cfg.Redis.DB,
 	})
 
 	Redis = rdb

@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"gin-example/configs"
+	"gin-example/init/config"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 
@@ -15,13 +15,13 @@ import (
 var Mysql *gorm.DB
 
 func init() {
-	host := configs.Cfg.Mysql.Host
-	port := configs.Cfg.Mysql.Port
-	user := configs.Cfg.Mysql.User
-	pwd := configs.Cfg.Mysql.Password
-	tablePrefix := configs.Cfg.Mysql.TablePrefix
+	host := config.Cfg.Mysql.Host
+	port := config.Cfg.Mysql.Port
+	user := config.Cfg.Mysql.User
+	pwd := config.Cfg.Mysql.Password
+	tablePrefix := config.Cfg.Mysql.TablePrefix
 
-	dataBase := configs.Cfg.Mysql.DbName
+	dataBase := config.Cfg.Mysql.DbName
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, pwd, host, port, dataBase)
 
@@ -32,7 +32,7 @@ func init() {
 		},
 	})
 
-	if configs.Cfg.Debug {
+	if config.Cfg.Debug {
 		// 打印sql
 		db.Logger = logger.Default.LogMode(logger.Info)
 	}

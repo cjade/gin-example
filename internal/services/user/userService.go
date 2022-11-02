@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"fmt"
-	"gin-example/configs"
+	"gin-example/init/config"
 	"gin-example/internal/repositories"
 	"gin-example/pkg/util/db"
 	"time"
@@ -48,8 +48,8 @@ func (a *Auth) Check(userName, password string) (bool, error) {
 // @param token
 func CacheToken(userID int64, token string) {
 	ctx := context.Background()
-	key := fmt.Sprintf(configs.Cfg.CacheTokenKey, userID)
-	ttl := configs.Cfg.JWT.ExpiresAt * time.Minute
+	key := fmt.Sprintf(config.Cfg.CacheTokenKey, userID)
+	ttl := config.Cfg.JWT.ExpiresAt * time.Minute
 	rdb := db.Redis
 	defer rdb.Close()
 

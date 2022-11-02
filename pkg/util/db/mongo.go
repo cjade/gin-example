@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"gin-example/configs"
+	"gin-example/init/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -18,11 +18,11 @@ func init() {
 	defer cancel()
 
 	auth := ""
-	if configs.Cfg.Mongo.Auth {
-		auth = fmt.Sprintf("%s:%s@", configs.Cfg.Mongo.Username, configs.Cfg.Mongo.Password)
+	if config.Cfg.Mongo.Auth {
+		auth = fmt.Sprintf("%s:%s@", config.Cfg.Mongo.Username, config.Cfg.Mongo.Password)
 	}
 
-	uri := fmt.Sprintf("mongodb://%s%s:%d", auth, configs.Cfg.Mongo.Host, configs.Cfg.Mongo.Port)
+	uri := fmt.Sprintf("mongodb://%s%s:%d", auth, config.Cfg.Mongo.Host, config.Cfg.Mongo.Port)
 	opts := options.Client().ApplyURI(uri)
 
 	// 链接数据库

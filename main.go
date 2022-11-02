@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gin-example/configs"
+	"gin-example/init/config"
+
+	//"gin-example/configs"
 	_ "gin-example/init"
 	"gin-example/internal/routes"
 	"net/http"
@@ -10,7 +12,7 @@ import (
 )
 
 func main() {
-	HostPort := fmt.Sprintf(":%d", configs.Cfg.Server.HostPort)
+	HostPort := fmt.Sprintf(":%d", config.Cfg.Server.HostPort)
 	initRouter := routes.InitRoutes()
 	server := &http.Server{
 		Addr:         HostPort,

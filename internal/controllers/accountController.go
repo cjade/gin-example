@@ -3,7 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"gin-example/configs"
+	"gin-example/init/config"
 	"gin-example/internal/repositories"
 	"gin-example/internal/services/user"
 	"gin-example/pkg/jwt"
@@ -59,7 +59,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("token", token, int(configs.Cfg.JWT.ExpiresAt)*60, "/", "http://127.0.0.1:8080", false, true)
+	c.SetCookie("token", token, int(config.Cfg.JWT.ExpiresAt)*60, "/", "http://127.0.0.1:8080", false, true)
 	appR.Response(http.StatusOK, 200,
 		gin.H{
 			"token": token,
@@ -73,7 +73,7 @@ func Login(c *gin.Context) {
 // @param c
 func Logout(c *gin.Context) {
 	ctx := context.Background()
-	key := fmt.Sprintf(configs.Cfg.CacheTokenKey, user.UserId)
+	key := fmt.Sprintf(config.Cfg.CacheTokenKey, user.UserId)
 	rdb := db.Redis
 	defer rdb.Close()
 

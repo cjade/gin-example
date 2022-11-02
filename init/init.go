@@ -5,6 +5,7 @@
 package init
 
 import (
+	_ "gin-example/init/config"
 	_ "gin-example/pkg/env"
 )
 

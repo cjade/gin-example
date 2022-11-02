@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"gin-example/configs"
+	"gin-example/init/config"
 	"gin-example/internal/services/user"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
@@ -21,8 +21,8 @@ type JWTConf struct {
 var jwtConf = &JWTConf{}
 
 func init() {
-	jwtConf.Secret = []byte(configs.Cfg.JWT.Secret)
-	jwtConf.ExpiresAt = configs.Cfg.JWT.ExpiresAt * time.Minute
+	jwtConf.Secret = []byte(config.Cfg.JWT.Secret)
+	jwtConf.ExpiresAt = config.Cfg.JWT.ExpiresAt * time.Minute
 }
 
 // GenerateToken

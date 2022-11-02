@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"context"
-	"gin-example/configs"
+	"gin-example/init/config"
 	"gin-example/pkg/jwt"
 	"gin-example/pkg/util/db"
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ import (
 func Index(c *gin.Context) {
 	status := http.StatusOK
 	message := "OK!"
-	ttl := configs.Cfg.JWT.ExpiresAt * time.Minute
+	ttl := config.Cfg.JWT.ExpiresAt * time.Minute
 	key := "token"
 	rdb := db.Redis
 	defer rdb.Close()
@@ -63,7 +63,7 @@ func Index(c *gin.Context) {
 	if err != nil || clientToken == "" {
 		//创建cookie
 		//cooki_e = "NotSet"
-		c.SetCookie("token", token, int(configs.Cfg.JWT.ExpiresAt)*60, "/", "http://127.0.0.1:8080", false, true)
+		c.SetCookie("token", token, int(config.Cfg.JWT.ExpiresAt)*60, "/", "http://127.0.0.1:8080", false, true)
 	}
 
 	c.JSON(http.StatusOK, data)
