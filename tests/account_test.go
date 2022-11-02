@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"gin-example/app/controllers"
+	"gin-example/internal/controllers"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
