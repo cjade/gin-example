@@ -16,12 +16,12 @@ import (
 func aa() {
 	//Setup()
 	//return
-	// 条件更新
-	db.Mysql.Model(&models.Users{}).Where("id = ?", 1587723805004926976).Update("user_name", "aba")
-	return
+	//// 条件更新
+	//db.Mysql.Model(&models.Users{}).Where("id = ?", 1588097901412749312).Update("user_name", "aba")
+	//return
 	u := &repositories.Users{}
 	//u := models.Users{UserName: "ds"}
-	u.UserName = "dsad"
+	u.UserName = "qwer"
 	u.Password = hash.BcryptHash("123456")
 	create, err := u.Create()
 	if err != nil {

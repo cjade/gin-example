@@ -31,7 +31,7 @@ func Index(c *gin.Context) {
 	token := rdb.Get(ctx, key).Val()
 
 	if token == "" {
-		token, err := jwt.GenerateToken("123", "bac")
+		token, err := jwt.GenerateToken(123, "bac")
 		if err != nil {
 			log.Fatalln(err)
 		}

@@ -5,12 +5,15 @@
 package repositories
 
 import (
+	"errors"
 	"gin-example/internal/models"
 	"gin-example/pkg/util/db"
+	"gorm.io/gorm"
+	"log"
 )
 
-type Users struct {
-	models.Users
+type UsersRepository struct {
+	Fields []string
 }
 
 // Create
@@ -25,55 +28,34 @@ type Users struct {
 //
 // @Return  int64
 // @Return  error
-func (u *Users) Create() (uint64, error) {
+func (ur *UsersRepository) Create(u models.Users) (uint64, error) {
 	result := db.Mysql.Create(&u)
 	return u.UserId, result.Error
 }
 
-// CheckAuth
+// GetUserByAccount
 //
-// @Description: 验证用户是否存在
-//
-// @Author: Jade
-//
-// @Date: 2022-10-31 16:02:53
-//
-// @Receiver  u
-//
-// @Return  bool
-// @Return  error
-func (u *Users) CheckAuth() (bool, error) {
-	err := db.Mysql.Select("user_id").Where(models.Users{UserName: u.UserName, Password: u.Password}).First(u).Error
-	if err != nil {
-		return false, err
-	}
-
-	if u.UserId > 0 {
-		return true, nil
-	}
-
-	return false, nil
-}
-
-// GetUserIdByUserName
-//
-// @Description: 通过账号查找用户ID
+// @Description: 通过账号获取用户
 //
 // @Author: Jade
 //
-// @Date: 2022-10-31 16:06:38
+// @Date: 2022-11-03 17:25:01
 //
 // @Receiver  u
 //
-// @Param  userName
-//
-// @Return  int64
 // @Return  error
-func (u *Users) GetUserIdByUserName(userName string) (uint64, error) {
-	err := db.Mysql.Select("user_id").Where(models.Users{UserName: userName}).First(u).Error
-	if err != nil {
-		return 0, err
-	}
+func (ur *UsersRepository) GetUserByAccount(userName string) models.Users {
+	user := models.Users{}
 
-	return u.UserId, nil
+	err := db.Mysql.Select(ur.Fields).
+		Where("user_name = ?", userName).
+		Or("email = ?", userName).
+		Or("phone_number", userName).
+		First(&user).Error
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		panic(err)
+	}
+	log.Printf("%v", user)
+	return user
 }

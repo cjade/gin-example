@@ -11,6 +11,7 @@ type Users struct {
 	Password    string `gorm:"not null;type:varchar(60);comment:密码"`
 	RealName    string `gorm:"not null;default:'';size:50;comment:真实名称"`
 	Gender      int8   `gorm:"not null;default:0;comment:性别"`
+	Email       string `gorm:"not null;default:'';type:varchar(100);comment:邮箱"`
 	PhoneNumber string `gorm:"not null;default:'';size:11;comment:手机号码"`
 	Age         uint8  `gorm:"not null;default:0;comment:年龄"`
 	UserStatus  int8   `gorm:"not null;default:0;comment:用户状态"`

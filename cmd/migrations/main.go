@@ -14,4 +14,5 @@ var name = flag.String("flagname", "sd", "help message for flagname")
 func main() {
 	flag.Parse()
 	fmt.Println(*name)
+	aa()
 }

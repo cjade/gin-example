@@ -5,10 +5,12 @@
 package e
 
 var MsgFlags = map[int]string{
-	SUCCESS:        "ok",
-	ERROR:          "fail",
-	InvalidParams:  "请求参数错误",
-	RecordNotFound: "记录不存在",
+	SUCCESS:                "ok",
+	ERROR:                  "fail",
+	AccountExisting:        "账号已存在",
+	AccountOrPasswordError: "账号或密码已错误",
+	InvalidParams:          "请求参数错误",
+	RecordNotFound:         "记录不存在",
 }
 
 func GetMsg(code int) string {

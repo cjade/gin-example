@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"gin-example/init/config"
-	"gin-example/internal/repositories"
 	"gin-example/internal/services/user"
 	"gin-example/pkg/jwt"
 	"gin-example/pkg/util/app"
 	"gin-example/pkg/util/db"
 	"gin-example/pkg/util/e"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -19,10 +19,7 @@ type User struct {
 	UserName string
 }
 
-type LoginRequest struct {
-	UserName string `json:"user_name" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
+var userService = user.Service{}
 
 // Login
 //
@@ -35,34 +32,31 @@ type LoginRequest struct {
 // @Param  c
 func Login(c *gin.Context) {
 	appR := app.Gin{C: c}
-	req := &LoginRequest{}
+	req := &user.LoginRequest{}
 	if err := c.ShouldBind(req); err != nil {
+		log.Printf("%v", err.Error())
 		appR.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
-	authServer := user.Auth{}
-	isExist, err := authServer.Check(req.UserName, req.Password)
-	if err != nil {
-		appR.Response(http.StatusBadRequest, e.RecordNotFound, nil)
-		return
-	}
+	isExist := userService.Check(req)
 
 	if !isExist {
-		appR.Response(http.StatusBadRequest, e.RecordNotFound, nil)
+		appR.Response(http.StatusBadRequest, e.AccountOrPasswordError, nil)
 		return
 	}
 
-	token, err := jwt.GenerateToken(req.UserName, req.Password)
+	token, err := jwt.GenerateToken(userService.UserId, req.UserName)
 	if err != nil {
-		appR.Response(http.StatusBadRequest, 10003, nil)
+		appR.Response(http.StatusBadRequest, e.ERROR, nil)
 		return
 	}
 
 	c.SetCookie("token", token, int(config.Cfg.JWT.ExpiresAt)*60, "/", "http://127.0.0.1:8080", false, true)
 	appR.Response(http.StatusOK, 200,
 		gin.H{
-			"token": token,
+			"user_id": userService.UserId,
+			"token":   token,
 		},
 	)
 
@@ -73,7 +67,7 @@ func Login(c *gin.Context) {
 // @param c
 func Logout(c *gin.Context) {
 	ctx := context.Background()
-	key := fmt.Sprintf(config.Cfg.CacheTokenKey, user.UserId)
+	key := fmt.Sprintf(config.Cfg.CacheTokenKey, userService.GetUserId())
 	rdb := db.Redis
 	defer rdb.Close()
 
@@ -97,33 +91,31 @@ func Logout(c *gin.Context) {
 //	@param c
 func Register(c *gin.Context) {
 	appR := app.Gin{C: c}
-	b := repositories.Book{}
-	b.BookName = "abd"
-	bid, _ := b.Create()
+	req := &userService.RegisterRequest
 
-	appR.Response(http.StatusOK, 200,
-		gin.H{
-			"bid":    bid,
-			"BookId": b.BookId,
-		},
-	)
-	return
+	if err := c.ShouldBind(req); err != nil {
+		appR.Response(http.StatusBadRequest, e.InvalidParams, nil)
+		return
+	}
 
-	//if e
+	// 账号是否已经存在
+	isExistAccount := userService.IsExistAccount()
+	if isExistAccount {
+		appR.Response(http.StatusBadRequest, e.AccountExisting, nil)
+		return
+	}
 
-	userName := c.PostForm("user_name")
-	password := c.PostForm("password")
+	token, err := userService.Register()
+	if !err {
+		appR.Response(http.StatusInternalServerError, e.ERROR, nil)
+		return
+	}
 
-	//hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MaxCost)
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//encodePWD := string(hash)
-	c.JSON(http.StatusOK, gin.H{
-		"userName": userName,
-		"password": password,
-		//"encodePWD": encodePWD,
+	appR.Response(http.StatusOK, e.SUCCESS, gin.H{
+		"user_id": userService.UserId,
+		"token":   token,
 	})
+	return
 }
 
 // UserInfo
@@ -138,6 +130,6 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 
-	userId := user.UserId
+	userId := userService.GetUserId()
 	c.JSON(http.StatusOK, gin.H{"uuid": userId})
 }

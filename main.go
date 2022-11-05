@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"gin-example/init/config"
 
+	"gin-example/internal/routes"
 	//"gin-example/configs"
 	_ "gin-example/init"
-	"gin-example/internal/routes"
 	"net/http"
 	"time"
 )

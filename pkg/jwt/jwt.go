@@ -2,13 +2,14 @@ package jwt
 
 import (
 	"gin-example/init/config"
-	"gin-example/internal/services/user"
+	"gin-example/internal/services/cache"
+	"gin-example/pkg/env"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
 
 type Claims struct {
-	Id       int64  `json:"id"`
+	Id       uint64 `json:"id"`
 	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
@@ -30,10 +31,9 @@ func init() {
 //	@Description: 生成token
 //	@return string token
 //	@return error
-func GenerateToken(userName string, password string) (string, error) {
+func GenerateToken(userId uint64, userName string) (string, error) {
 	mySigningKey := jwtConf.Secret
-	_ = password
-	var userId int64 = 123
+	issuer := env.Value()
 	// Create the Claims
 	claims := Claims{
 		userId,
@@ -42,14 +42,15 @@ func GenerateToken(userName string, password string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(
 				time.Now().Add(jwtConf.ExpiresAt),
 			),
-			Issuer: "test",
+			Issuer: issuer,
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString(mySigningKey)
-	user.CacheToken(userId, ss)
-
-	return ss, err
+	strToken, err := token.SignedString(mySigningKey)
+	if err == nil {
+		cache.CacheToken(userId, strToken)
+	}
+	return strToken, err
 }
 
 // ParseJwtToken
@@ -74,6 +75,6 @@ func ParseJwtToken(tokenString string) (*Claims, error) {
 //	@Description: 获取用户ID
 //	@param claims
 //	@return int64
-func GetUserId(claims *Claims) int64 {
+func GetUserId(claims *Claims) uint64 {
 	return claims.Id
 }

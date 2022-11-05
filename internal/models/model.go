@@ -11,6 +11,6 @@ import (
 type Model struct {
 	//ID        uint      `gorm:"primaryKey"`
 	DeletedAt time.Time `gorm:"type:datetime(0);index;not null;default:'1970-01-01 08:00:00';comment:删除时间"`
-	CreatedAt time.Time `gorm:"type:datetime(0);NOT NULL;comment:创建时间"`
-	UpdatedAt time.Time `gorm:"type:datetime(0);NOT NULL;comment:更新时间"`
+	CreatedAt time.Time `gorm:"type:datetime(0);NOT NULL;default:CURRENT_TIMESTAMP;comment:创建时间"`
+	UpdatedAt time.Time `gorm:"type:datetime(0);NOT NULL;default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;comment:更新时间"`
 }

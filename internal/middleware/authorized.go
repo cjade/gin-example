@@ -33,7 +33,8 @@ func Auth() gin.HandlerFunc {
 
 		}
 		UserId := jwt2.GetUserId(claims)
-		user.InitUserServer(UserId)
+		userService := &user.Service{}
+		userService.SetUserId(UserId)
 
 		if code != http.StatusOK {
 			c.JSON(http.StatusUnauthorized, gin.H{
