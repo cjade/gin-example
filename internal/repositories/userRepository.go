@@ -1,4 +1,4 @@
-// Package Repositories
+// Package repositories
 // @Description:
 // @Author: Jade
 // @Date: 2022/10/31
@@ -13,7 +13,14 @@ import (
 )
 
 type UsersRepository struct {
-	Fields []string
+	BaseRepository
+}
+
+var Users = models.Users{}
+
+func (ur *UsersRepository) SetModel() *UsersRepository {
+	ur.Model = &Users
+	return ur
 }
 
 // Create
@@ -46,7 +53,6 @@ func (ur *UsersRepository) Create(u models.Users) (uint64, error) {
 // @Return  error
 func (ur *UsersRepository) GetUserByAccount(userName string) models.Users {
 	user := models.Users{}
-
 	err := db.Mysql.Select(ur.Fields).
 		Where("user_name = ?", userName).
 		Or("email = ?", userName).
